@@ -1,11 +1,13 @@
 <?php
 session_start();
+require('../app/functions.php');
 
 if (!empty($_POST)) {
   // エラー確認
   if ($_POST['username'] == '' ) {
     $error['username'] = 'blank';
   }
+
   if ($_POST['email'] == '' ) {
     $error['email'] = 'blank';
   }
@@ -17,12 +19,6 @@ if (!empty($_POST)) {
   if ($_POST['password'] == '' ) {
     $error['password'] = 'blank';
   }
-  
-  // if (empty($error)) {
-  //   $_SESSION['join'] = $_POST;
-  //   header('Location: check.php');
-  //   exit();
-  // }
 
   $fileName = $_FILES['image']['name'];
   if (!empty($fileName)) {
@@ -47,7 +43,6 @@ if (empty($error)) {
 
 }
 
-
 ?>
 
 <?php
@@ -60,21 +55,13 @@ foreach($error as $key => $e) {
 <?php
 // fileの確認
 echo "|アップロードされたファイル：" . $_FILES['image']['name'];
-
 ?>
 
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Bootstrap CSS v4.5 -->
-  <link rel="stylesheet" href="../css/style.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-  <script src="https://kit.fontawesome.com/50821e33c6.js" crossorigin="anonymous"></script>  
-  <title>kirThre</title>
-</head>
-<body>
+<?php
+include('../app/_parts/_header.php');
+?>
+
+
   <div class="container">
     <div class="jumbotron">
       <h2 class="display-5">kirThre</h2>
@@ -120,21 +107,21 @@ echo "|アップロードされたファイル：" . $_FILES['image']['name'];
           <!-- ユーザー名 -->
           <div class="form-group">
             <label for="username"><b>ユーザー名</b></label>
-            <input name="username" type="text" class="form-control" id="username" placeholder="テストくん" value="<?php echo htmlspecialchars($_POST['username'], ENT_QUOTES);?>">
+            <input name="username" type="text" class="form-control" id="username" placeholder="テストくん" value="<?php echo h($_POST['username']);?>">
           </div>
 
           <!-- メールアドレス -->
           <div class="form-group">
             <label for="email"><b>メールアドレス</b></label>
-            <input name="email" type="email" class="form-control" id="email1" aria-describedby="emailHelp" placeholder="sample@gmail.com" value="<?php echo htmlspecialchars($_POST['email'], ENT_QUOTES);?>">
+            <input name="email" type="email" class="form-control" id="email1" aria-describedby="emailHelp" placeholder="sample@gmail.com" value="<?php echo h($_POST['email']); ?>">
             <small id="emailHelp" class="form-text text-muted">ログイン情報としてのみ利用します。</small>
           </div>
 
           <!-- パスワード -->
           <div class="form-group">
             <label for="password"><b>パスワード</b></label>
-            <input name="password" type="password" class="form-control" id="password1" aria-describedby="passHelp" placeholder="●●●●" 
-            value="<?php htmlspecialchars($_POST['password'], ENT_QUOTES); ?>">
+            <input name="password" type="password" class="form-control" id="password1" aria-describedby="passHelp" placeholder="****" 
+            value="<?php h($_POST['password']); ?>">
             <small id="passHelp" class="form-text text-muted">4文字以上としてください。</small>
           </div>
 
@@ -166,6 +153,7 @@ echo "|アップロードされたファイル：" . $_FILES['image']['name'];
     </div>
 
   </div>
+
+<?php
+include('../app/_parts/_footer.php');
   
-</body>
-</html>

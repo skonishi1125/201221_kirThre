@@ -2,10 +2,11 @@
 session_start();
 require('../app/functions.php');
 
+// postが空でない場合の処理
 if (!empty($_POST)) {
   // エラー確認
-  if ($_POST['username'] == '' ) {
-    $error['username'] = 'blank';
+  if ($_POST['name'] == '' ) {
+    $error['name'] = 'blank';
   }
 
   if ($_POST['email'] == '' ) {
@@ -28,53 +29,56 @@ if (!empty($_POST)) {
     }
   }
 
+  // postされて、エラーがなかった場合の処理
+  if (empty($error)) {
+    // 画像アップロード
+    $image = date('YmdHis') . $_FILES['image']['name'];
+    move_uploaded_file($_FILES['image']['tmp_name'], '../member_picture/' . $image);
+  
+    $_SESSION['join'] = $_POST;
+    $_SESSION['join']['image'] = $image;
+    $_SESSION['join']['isSetFile'] = $_FILES['image']['name'];
+
+    // !empty($_POST)の外に書いてしまうと、無記入の場合はerrorが空のためずっと飛び続けてしまう
+    header('Location: http://localhost:8888/201221_kirThre/join/check.php');
+    exit();
+  
+  }
+
 }
 
-// エラーがなかった場合の処理
-if (empty($error)) {
-  // 画像アップロード
-  $image = date('YmdHis') . $_FILES['image']['name'];
-  move_uploaded_file($_FILES['image']['tmp_name'], '../member_picture/' . $image);
-
-  $_SESSION['join'] = $_POST;
-  $_SESSION['join']['image'] = $image;
-  header('Location: check.php');
-  exit();
-
+// 書き直しの処理
+if ($_REQUEST['action'] == 'rewrite') {
+  $_POST = $_SESSION['join'];
+  $back['rewrite'] = true;
+} else {
+  $back['rewrite'] = false;
 }
 
-?>
 
-<?php
-// error配列状態の確認
-foreach($error as $key => $e) {
-  echo $key . "の状態:" . $e . "です。...\n";
-}
-?>
+// // error配列状態の確認
+// foreach($error as $key => $e) {
+//   echo $key . "の状態:" . $e . "です。...\n";
+// }
 
-<?php
-// fileの確認
-echo "|アップロードされたファイル：" . $_FILES['image']['name'];
-?>
+// // fileの確認
+// echo "|アップロードされたファイル：" . $_FILES['image']['name'];
 
-<?php
+// ヘッダー読み込み
 include('../app/_parts/_header.php');
 ?>
 
 
-  <div class="container">
-    <div class="jumbotron">
-      <h2 class="display-5">kirThre</h2>
-      <p class="lead">書き込みテストページです。</p>
-    </div>
+
     <div class="row">
       <div class="col-md-12">
 
         <!-- エラーログ  -->
+        <?php if (!empty($error)) : ?>
         <div class="alert alert-danger" role="alert">
-          <h5 class="alert-heading">登録いただいた内容に、以下の不備がありました。</h5>
+          <h5 class="alert-heading">エラーがありました。</h5>
           <!-- 名前エラー -->
-          <?php if ($error['username'] == 'blank') : ?>
+          <?php if ($error['name'] == 'blank') : ?>
             <p>・ユーザーネームを入力してください。</p>
           <?php endif; ?>
           <!-- メールエラー -->
@@ -96,9 +100,15 @@ include('../app/_parts/_header.php');
               　本サービスのアイコン画像は、「.jpg」「.png」ファイルのみの対応となります。
               </p>
           <?php endif; ?>
-          <small>※エラー発生時、画像ファイルを指定されていた場合はお手数ですが再度ご指定ください。</small>
+          <small>※画像ファイルを指定されていた場合はお手数ですが再度ご指定ください。</small>
         </div>
-        
+        <?php endif; ?>
+      
+        <?php if ($back['rewrite'] == true && empty($error) ) : ?>
+        <div class="alert alert-primary" role="alert">
+          <small>※画像ファイルを指定されていた場合はお手数ですが再度ご指定ください。</small>
+        </div>
+        <?php endif; ?>
 
 
         <!-- フォーム
@@ -106,8 +116,8 @@ include('../app/_parts/_header.php');
         <form action="" method="post" enctype="multipart/form-data">
           <!-- ユーザー名 -->
           <div class="form-group">
-            <label for="username"><b>ユーザー名</b></label>
-            <input name="username" type="text" class="form-control" id="username" placeholder="テストくん" value="<?php echo h($_POST['username']);?>">
+            <label for="name"><b>ユーザー名</b></label>
+            <input name="name" type="text" class="form-control" id="name" placeholder="テストくん" value="<?php echo h($_POST['name']);?>">
           </div>
 
           <!-- メールアドレス -->

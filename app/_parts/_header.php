@@ -10,3 +10,8 @@
   <title>kirThre</title>
 </head>
 <body>
+<div class="container">
+    <div class="jumbotron">
+      <h2 class="display-5">kirThre</h2>
+      <p class="lead">書き込みテストページです。</p>
+    </div>
